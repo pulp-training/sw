@@ -1,0 +1,98 @@
+// Copyright ETH Zurich
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "timer",
+  clock_primary: "clk_i",
+  bus_device: "reg",
+  bus_host: "none",
+
+  regwidth: "32",
+  registers: [
+    { name: "CFG_LO",
+      desc: "Timer low configuration",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+          { bits: "0",
+	    name: "EN",
+	    desc: "Timer enable (starts counting)"
+	  },
+	  { bits: "1",
+	    name: "RST",
+	    desc: "Timer low reset, cleared after the reset happened"
+	  },
+	  { bits: "2",
+	    name: "IRQEN",
+	    desc: "Timer low interrupt generation on compare match enable"
+	  },
+	  { bits: "4",
+	    name: "MODE",
+	    desc: "Timer low continuous mode configuration"
+	  },
+	  { bits: "5",
+	    name: "ONES",
+	    desc: "Timer low one shot configuration"
+	  },
+	  { bits: "6",
+	    name: "PEN",
+	    desc: "TImer low prescaler enable"
+	  },
+	  { bits: "7",
+	    name: "CCFG",
+	    desc: "Timer low clock source configuration"
+	  },
+	  { bits: "15:8",
+	    name: "PVAL",
+	    desc: "Timer low prescaler value, ftimer = fclk / (1 + PVAL)"
+	  },
+	  { bits: "31",
+	    name: "CASC",
+	    desc: "Timer low and timer high 64-bit cascaded mode enable"
+	  }
+      ],
+    },
+    { reserved: "1"}
+    { name: "CNT_LO",
+      desc: "Timer low counter value",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0" }
+      ],
+    },
+    { reserved: "1"}
+    { name: "CMP_LO",
+      desc: "Timer low comparator value",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0" }
+      ],
+    },
+    { reserved: "1"}
+    { name: "START_LO",
+      desc: "Start timer low counter",
+      swaccess: "wo",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "STRT",
+          desc: "Timer low start command"
+        }
+      ],
+    },
+    { reserved: "1"}
+    { name: "RESET_LO",
+      desc: "Reset timer low counter",
+      swaccess: "wo",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "RST",
+          desc: "Timer low reset command"
+        }
+      ],
+    }
+  ],
+}
