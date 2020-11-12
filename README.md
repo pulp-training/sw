@@ -1,8 +1,10 @@
 # sw
 PULP-SDK and PULP-RUNTIME exercises
 
-PULPissimo's documentaation is available here
+## PULPissimo documentation
+PULPissimo's documentation is available here
 https://github.com/pulp-platform/pulpissimo/blob/master/doc/datasheet/datasheet.pdf
+It is also in this repository as `pulpissimo-datasheet.pdf`.
 
 ## register_interface and regtool.py
 Our `register_interface` tooling is available on
@@ -16,3 +18,4 @@ Dependencies for `regtool.py`. Requires `python3.6 >=`.
 python3.6 -m pip install mako --user
 python3.6 -m pip install hjson --user
 ```
+
