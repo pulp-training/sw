@@ -1,0 +1,14 @@
+diff --git a/SConstruct b/SConstruct
+index cef66e8..946868e 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -109,6 +109,9 @@ for config in configs:
+   elif chip == 'vivosoc4':
+     append_file('hal/chips/vivosoc4/fll.h')
+     append_file('hal/chips/vivosoc4/freq.h')
++  elif chip == 'pulpissimo':
++    print('USING MY_IP DRIVER')
++    append_file('hal/my_ip/my_ip_v1.h')
+ 
+ 
+ targets = []

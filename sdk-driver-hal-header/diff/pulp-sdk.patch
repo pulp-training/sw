@@ -1,0 +1,17 @@
+diff --git a/configs/mychip.sh b/configs/mychip.sh
+new file mode 100644
+index 0000000..d4c96e2
+--- /dev/null
++++ b/configs/mychip.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++
++scriptDir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
++
++export PULP_CURRENT_CONFIG=pulpissimo@config_file=chips/pulpissimo/mychip.json
++
++unset PULP_CURRENT_CONFIG_ARGS
++
++if [ -e ${scriptDir}/../init.sh ]; then
++    source ${scriptDir}/../init.sh
++fi
