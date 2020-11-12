@@ -1,0 +1,68 @@
+diff --git a/Makefile b/Makefile
+index d9b4d6c..2bf0593 100644
+--- a/Makefile
++++ b/Makefile
+@@ -28,6 +28,7 @@ include $(PULP_RT_CONFIG)
+ 
+ ifdef ARCHI_DIR
+ PULP_CFLAGS += -I$(ARCHI_DIR)
++$(info archi dir is $(ARCHI_DIR))
+ endif
+ 
+ PULP_CFLAGS += -I$(CURDIR)/kernel
+@@ -72,6 +73,7 @@ WS_INSTALL_FILES += include/rt/data/rt_data_bridge.h
+ 
+ ifndef MK_ROOT
+ HAL_FILES := $(shell plpfiles copy --item=hal_src_files)
++$(info hal files is $(HAL_FILES))
+ PULP_LIB_FC_SRCS_rt += $(HAL_FILES)
+ endif
+ 
+diff --git a/drivers/drivers.mk b/drivers/drivers.mk
+index da74441..2ac8033 100644
+--- a/drivers/drivers.mk
++++ b/drivers/drivers.mk
+@@ -122,3 +122,8 @@ PULP_LIB_FC_SRCS_rt += drivers/uart/uart.c
+ endif
+ endif
+ 
++
++ifeq '$(pulp_chip_family)' 'pulpissimo'
++PULP_LIB_FC_SRCS_rt += drivers/my_ip/my_ip.c
++$(warning PULP RT EXPORTIN MY_IP)
++endif
+diff --git a/drivers/my_ip/my_ip.c b/drivers/my_ip/my_ip.c
+new file mode 100644
+index 0000000..713e598
+--- /dev/null
++++ b/drivers/my_ip/my_ip.c
+@@ -0,0 +1,6 @@
++#include <stdio.h>
++
++int rt_my_ip_init(void) {
++    printf("Initialized my_ip successfully\n");
++    return 0;
++}
+diff --git a/include/rt/rt_api_decl.h b/include/rt/rt_api_decl.h
+index c26d8f6..ce80a80 100644
+--- a/include/rt/rt_api_decl.h
++++ b/include/rt/rt_api_decl.h
+@@ -74,5 +74,6 @@
+ #include "rt/rt_bridge.h"
+ #include "rt/rt_eeprom.h"
+ #include "rt/rt_task.h"
++#include "rt/rt_my_ip.h"
+ 
+ #endif
+diff --git a/include/rt/rt_my_ip.h b/include/rt/rt_my_ip.h
+new file mode 100644
+index 0000000..9478d23
+--- /dev/null
++++ b/include/rt/rt_my_ip.h
+@@ -0,0 +1,6 @@
++#ifndef __RT_MY_IP_H
++#define __RT_MY_IP_H
++
++int rt_my_ip_init(void);
++
++#endif
