@@ -39,7 +39,7 @@ feel stuck, ask for help.
      simulation and in your sourcecode. Again, use a good editor or recursive
      text search tool to make your live easier. 
      
-     > Hint: There is no bug in the RTL of PULPissimo (this include the modified
+     > Hint: There is no bug in the RTL of PULPissimo (this includes the modified
      > soc_clk_rst_gen.sv). The testbench does something with the SoC that
      > causes the errorneous behavior. Don't try to modify any file but `tb_pulp.sv`.
      
@@ -48,7 +48,7 @@ feel stuck, ask for help.
      resembles an issue we had during one of our tapeouts. If you managed to
      figure out what the issue is but did not yet figure out where exactly the
      errorneus behavior is triggered in the tb source file, try to first verify
-     your assumption using *forced signals* in the RTL simulation. Than try to
+     your assumption using *forced signals* in the RTL simulation. Then try to
      backtrack the moment where the offending interaction with the SoC happens
      using the log outputs of the boot procedure.
      
