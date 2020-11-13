@@ -19,7 +19,7 @@ could look like.
 Generating C header files
 
 ```
-python3.6 ./regtool.py --cdefines example/gpio_example.hjson  --outdir sv/
+python3.6 ./regtool.py --cdefines example/gpio_example.hjson
 ```
 
 Generating SystemVerilog
