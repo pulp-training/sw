@@ -2,7 +2,8 @@
 Note that this exercise needs the setup from the previous exercise,
 `sdk-driver-header`.
 
-0. Generate a reggen header file for the timer interface (`timer.hjson`), named `my_timer.h`
+0. Generate a C header file for the timer interface from the hjson description (`timer.hjson`) 
+   using reggen and name it `my_timer.h`.
 1. Include `my_timer.h` and demonstrate that `reggen.c` compiles and runs.
 2. Now modify `pulp-sdk/hal` to expose the `my_timer.h` header instead of
    locally including it. See the `sdk-hal-header` exercise.
