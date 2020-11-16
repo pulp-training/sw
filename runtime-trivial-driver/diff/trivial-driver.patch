@@ -1,0 +1,37 @@
+diff -rub --new-file pulp-runtime/drivers/my_ip.c pulp-runtime-trivial-driver/drivers/my_ip.c
+--- pulp-runtime/drivers/my_ip.c	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime-trivial-driver/drivers/my_ip.c	2020-11-16 23:54:32.610129681 +0100
+@@ -0,0 +1,11 @@
++#include "my_ip.h"
++
++void rt_my_ip_init(void)
++{
++
++}
++
++int rt_my_ip_other_init(void)
++{
++    return 1;
++}
+diff -rub --new-file pulp-runtime/include/my_ip.h pulp-runtime-trivial-driver/include/my_ip.h
+--- pulp-runtime/include/my_ip.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime-trivial-driver/include/my_ip.h	2020-11-16 23:54:32.627647738 +0100
+@@ -0,0 +1,5 @@
++#define MY_DRIVER_MACRO
++#define MY_OTHER_DRIVER_MACRO
++
++void rt_my_ip_init(void);
++int rt_my_ip_other_init(void);
+diff -rub --new-file pulp-runtime/rules/pulpos/targets/mychip.mk pulp-runtime-trivial-driver/rules/pulpos/targets/mychip.mk
+--- pulp-runtime/rules/pulpos/targets/mychip.mk	2020-11-16 23:55:28.742606290 +0100
++++ pulp-runtime-trivial-driver/rules/pulpos/targets/mychip.mk	2020-11-16 23:54:32.594344461 +0100
+@@ -38,6 +38,9 @@
+ PULP_SRCS     += kernel/freq-domains.c
+ PULP_SRCS     += kernel/chips/mychip/soc.c
+ 
++# mychip custom drivers
++PULP_SRCS     += drivers/my_ip.c
++
+ 
+ include $(PULPRT_HOME)/rules/pulpos/configs/default.mk
+ 
