@@ -1,0 +1,6 @@
+Only in pulp-runtime/configs: mychip.sh
+Only in pulp-runtime/include/archi/chips: mychip
+Only in pulp-runtime/include/chips: mychip
+Only in pulp-runtime/include/hal/chips: mychip
+Only in pulp-runtime/kernel/chips: mychip
+Only in pulp-runtime/rules/pulpos/targets: mychip.mk

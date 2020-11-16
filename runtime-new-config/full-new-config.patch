@@ -1,0 +1,1096 @@
+diff -rub --new-file pulp-runtime-orig/configs/mychip.sh pulp-runtime/configs/mychip.sh
+--- pulp-runtime-orig/configs/mychip.sh	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/configs/mychip.sh	2020-11-16 23:09:45.602116071 +0100
+@@ -0,0 +1,15 @@
++#!/bin/bash -e
++
++export PULPRT_TARGET=mychip
++export PULPRUN_TARGET=mychip
++
++if [  -n "${ZSH_VERSION:-}" ]; then 
++        DIR="$(readlink -f -- "${(%):-%x}")"
++        scriptDir="$(dirname $DIR)"
++else
++
++    scriptDir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
++
++fi
++
++source $scriptDir/common.sh
+diff -rub --new-file pulp-runtime-orig/include/archi/chips/mychip/apb_soc_ctrl.h pulp-runtime/include/archi/chips/mychip/apb_soc_ctrl.h
+--- pulp-runtime-orig/include/archi/chips/mychip/apb_soc_ctrl.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/archi/chips/mychip/apb_soc_ctrl.h	2020-11-10 17:38:02.746228476 +0100
+@@ -0,0 +1,116 @@
++
++/* THIS FILE HAS BEEN GENERATED, DO NOT MODIFY IT.
++ */
++
++/*
++ * Copyright (C) 2018 ETH Zurich, University of Bologna
++ * and GreenWaves Technologies
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef __INCLUDE_ARCHI_CHIPS_PULPISSIMO_APB_SOC_CTRL_H__
++#define __INCLUDE_ARCHI_CHIPS_PULPISSIMO_APB_SOC_CTRL_H__
++
++#ifndef LANGUAGE_ASSEMBLY
++
++#include <stdint.h>
++#include "archi/utils.h"
++
++#endif
++
++
++
++
++//
++// REGISTERS
++//
++
++// Value of pad bootsel
++#define APB_SOC_BOOTSEL_OFFSET                   0xc4
++
++
++
++//
++// REGISTERS FIELDS
++//
++
++
++
++//
++// REGISTERS STRUCTS
++//
++
++#ifndef LANGUAGE_ASSEMBLY
++
++typedef union {
++  struct {
++  };
++  unsigned int raw;
++} __attribute__((packed)) apb_soc_bootsel_t;
++
++#endif
++
++
++
++//
++// REGISTERS STRUCTS
++//
++
++#ifdef __GVSOC__
++
++class vp_apb_soc_bootsel : public vp::reg_32
++{
++public:
++};
++
++#endif
++
++
++
++//
++// REGISTERS GLOBAL STRUCT
++//
++
++#ifndef LANGUAGE_ASSEMBLY
++
++typedef struct {
++  unsigned int bootsel         ; // Value of pad bootsel
++} __attribute__((packed)) apb_soc_apb_soc_t;
++
++#endif
++
++
++
++//
++// REGISTERS ACCESS FUNCTIONS
++//
++
++#ifndef LANGUAGE_ASSEMBLY
++
++static inline uint32_t apb_soc_bootsel_get(uint32_t base) { return ARCHI_READ(base, APB_SOC_BOOTSEL_OFFSET); }
++static inline void apb_soc_bootsel_set(uint32_t base, uint32_t value) { ARCHI_WRITE(base, APB_SOC_BOOTSEL_OFFSET, value); }
++
++#endif
++
++
++
++//
++// REGISTERS FIELDS MACROS
++//
++
++#ifndef LANGUAGE_ASSEMBLY
++
++#endif
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/archi/chips/mychip/apb_soc.h pulp-runtime/include/archi/chips/mychip/apb_soc.h
+--- pulp-runtime-orig/include/archi/chips/mychip/apb_soc.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/archi/chips/mychip/apb_soc.h	2020-11-10 17:38:02.744573606 +0100
+@@ -0,0 +1,121 @@
++/*
++ * Copyright (C) 2018 ETH Zurich and University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef __ARCHI_PULPISSIMO_APB_SOC_H__
++#define __ARCHI_PULPISSIMO_APB_SOC_H__
++ 
++#define APB_SOC_BOOT_OTHER    0
++#define APB_SOC_BOOT_JTAG     1
++#define APB_SOC_BOOT_SPI      2
++#define APB_SOC_BOOT_ROM      3
++#define APB_SOC_BOOT_PRELOAD  4
++#define APB_SOC_BOOT_HYPER    5
++#define APB_SOC_BOOT_SPIM     6
++#define APB_SOC_BOOT_SPIM_QPI 7
++
++#define APB_SOC_PLT_OTHER   0
++#define APB_SOC_PLT_FPGA    1
++#define APB_SOC_PLT_RTL     2
++#define APB_SOC_PLT_VP      3
++#define APB_SOC_PLT_CHIP    4
++ 
++//PADs configuration is made of 8bits out of which only the first 6 are used
++//bit0    enable pull UP
++//bit1    enable pull DOWN
++//bit2    enable ST
++//bit3    enable SlewRate Limit
++//bit4..5 Driving Strength
++//bit6..7 not used
++
++#define APB_SOC_BOOTADDR_OFFSET   0x04
++#define APB_SOC_INFO_OFFSET       0x00 //contains number of cores [31:16] and clusters [15:0]
++#define APB_SOC_INFOEXTD_OFFSET   0x04 //not used at the moment
++#define APB_SOC_NOTUSED0_OFFSET   0x08 //not used at the moment
++#define APB_SOC_CLUSTER_ISOLATE_OFFSET   0x0C //not used at the moment
++
++#define	APB_SOC_PADFUN0_OFFSET	  0x10
++#define	APB_SOC_PADCFG0_OFFSET	  0x20
++
++#define APB_SOC_PADFUN_OFFSET(g)   (APB_SOC_PADFUN0_OFFSET+(g)*4) //sets the mux for pins  g*16+0 (bits [1:0]) to g*16+15 (bits [31:30])
++#define APB_SOC_PADFUN_NO(pad)     ((pad) >> 4)
++#define APB_SOC_PADFUN_PAD(padfun) ((padfun)*16)
++#define APB_SOC_PADFUN_SIZE        2
++#define ARCHI_APB_SOC_PADFUN_NB          4
++#define APB_SOC_PADFUN_BIT(pad)    (((pad) & 0xF) << 1)
++
++#define APB_SOC_PADCFG_OFFSET(g)   (APB_SOC_PADCFG0_OFFSET+(g)*4) //sets config for pin  g*4+0(bits [7:0]) to pin  g*4+3(bits [31:24])
++#define APB_SOC_PADCFG_NO(pad)     ((pad) >> 2)
++#define APB_SOC_PADCFG_PAD(padfun) ((padfun)*4)
++#define APB_SOC_PADCFG_SIZE        8
++#define APB_SOC_PADCFG_BIT(pad)    (((pad) & 0x3) << 3)
++ 
++#define APB_SOC_PWRCMD_OFFSET     0x60 //change power mode(not funtional yet)
++#define APB_SOC_PWRCFG_OFFSET     0x64 //configures power modes(not funtional yet)
++#define APB_SOC_PWRREG_OFFSET     0x68 //32 bit GP register used by power pngmt routines to see if is hard or cold reboot
++#define APB_SOC_BUSY_OFFSET       0x6C //not used at the moment
++#define APB_SOC_MMARGIN_OFFSET    0x70 //memory margin pins(not used at the moment)
++#define APB_SOC_JTAG_REG          0x74 // R/W register for interaction with the the chip environment
++#define APB_SOC_L2_SLEEP_OFFSET   0x78 //memory margin pins(not used at the moment)
++#define APB_SOC_NOTUSED3_OFFSET   0x7C //not used at the moment
++#define APB_SOC_CLKDIV0_OFFSET    0x80 //soc clock divider(to be removed)
++#define APB_SOC_CLKDIV1_OFFSET    0x84 //cluster clock divider(to be removed)
++#define APB_SOC_CLKDIV2_OFFSET    0x88 //not used at the moment
++#define APB_SOC_CLKDIV3_OFFSET    0x8C //not used at the moment
++#define APB_SOC_CLKDIV4_OFFSET    0x90 //not used at the moment
++#define APB_SOC_NOTUSED4_OFFSET   0x94 //not used at the moment
++#define APB_SOC_NOTUSED5_OFFSET   0x98 //not used at the moment
++#define APB_SOC_NOTUSED6_OFFSET   0x9C //not used at the moment
++#define APB_SOC_CORESTATUS_OFFSET 0xA0 //32bit GP register to be used during testing to return EOC(bit[31]) and status(bit[30:0])
++#define APB_SOC_CORESTATUS_RO_OFFSET 0xC0 //32bit GP register to be used during testing to return EOC(bit[31]) and status(bit[30:0])
++#define APB_SOC_PADS_CONFIG       0xC4
++
++#define APB_SOC_PADS_CONFIG_BOOTSEL_BIT 0
++
++#define APB_SOC_JTAG_REG_EXT_BIT   8
++#define APB_SOC_JTAG_REG_EXT_WIDTH 4
++
++#define APB_SOC_JTAG_REG_LOC_BIT   0
++#define APB_SOC_JTAG_REG_LOC_WIDTH 4
++
++#define APB_SOC_INFO_CORES_OFFSET    (APB_SOC_INFO_OFFSET + 2)
++#define APB_SOC_INFO_CLUSTERS_OFFSET (APB_SOC_INFO_OFFSET)
++
++#define APB_SOC_STATUS_EOC_BIT  31
++#define APB_SOC_NB_CORE_BIT     16
++
++
++#define APB_SOC_BYPASS_OFFSET   0x70
++
++#define APB_SOC_BYPASS_CLOCK_GATE_BIT 10
++#define APB_SOC_BYPASS_CLUSTER_STATE_BIT 3
++#define APB_SOC_BYPASS_USER0_BIT       14
++#define APB_SOC_BYPASS_USER1_BIT       15
++
++
++#define APB_SOC_FLL_CTRL_OFFSET         0xD0
++#define APB_SOC_CLKDIV_SOC_OFFSET       0xD4
++#define APB_SOC_CLKDIV_CLUSTER_OFFSET   0xD8
++#define APB_SOC_CLKDIV_PERIPH_OFFSET    0xDC
++
++
++#define APB_SOC_FLL_CTRL_SOC_BIT        0
++#define APB_SOC_FLL_CTRL_CLUSTER_BIT    1
++#define APB_SOC_FLL_CTRL_PERIPH_BIT     2
++
++
++#define APB_SOC_RTC_OFFSET     0x1D0
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/archi/chips/mychip/memory_map.h pulp-runtime/include/archi/chips/mychip/memory_map.h
+--- pulp-runtime-orig/include/archi/chips/mychip/memory_map.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/archi/chips/mychip/memory_map.h	2020-11-10 17:38:02.748269693 +0100
+@@ -0,0 +1,81 @@
++/*
++ * Copyright (C) 2018 ETH Zurich and University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++
++#ifndef __ARCHI_PULPISSIMO_MEMORY_MAP_H__
++#define __ARCHI_PULPISSIMO_MEMORY_MAP_H__
++
++
++
++/*
++ * SOC PERIPHERALS
++ */
++
++#define ARCHI_SOC_PERIPHERALS_ADDR    0x1A100000
++
++#define ARCHI_FC_TIMER_SIZE                 0x00000800
++
++#define ARCHI_FLL_OFFSET              0x00000000
++#define ARCHI_GPIO_OFFSET             0x00001000
++#define ARCHI_UDMA_OFFSET             0x00002000
++#define ARCHI_APB_SOC_CTRL_OFFSET     0x00004000
++#define ARCHI_SOC_EU_OFFSET           0x00006000
++#define ARCHI_FC_ITC_OFFSET           0x00009800
++#define ARCHI_FC_TIMER_OFFSET         0x0000B000
++#define ARCHI_FC_HWPE_OFFSET          0x0000C000
++#define ARCHI_STDOUT_OFFSET           0x0000F000
++
++
++
++#define ARCHI_GPIO_ADDR              ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_GPIO_OFFSET )
++#define ARCHI_UDMA_ADDR              ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_UDMA_OFFSET )
++#define ARCHI_APB_SOC_CTRL_ADDR      ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_APB_SOC_CTRL_OFFSET )
++#define ARCHI_SOC_EU_ADDR            ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_SOC_EU_OFFSET )
++#define ARCHI_FC_ITC_ADDR            ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_FC_ITC_OFFSET )
++#define ARCHI_FC_TIMER_ADDR          ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_FC_TIMER_OFFSET )
++#define ARCHI_FC_HWPE_ADDR           ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_FC_HWPE_OFFSET )
++#define ARCHI_STDOUT_ADDR            ( ARCHI_SOC_PERIPHERALS_ADDR + ARCHI_STDOUT_OFFSET )
++
++
++
++#define ARCHI_FLL_AREA_SIZE          0x00000010
++
++
++
++
++/*
++ * CLUSTER
++ */
++
++#define ARCHI_CLUSTER_ADDR              0x00000000
++#define ARCHI_CLUSTER_SIZE              0x00400000
++#define ARCHI_CLUSTER_GLOBAL_ADDR(cid)  (0x10000000 + (cid)*ARCHI_CLUSTER_SIZE)
++
++
++
++/*
++ * CLUSTER PERIPHERALS
++ */
++
++#define ARCHI_CLUSTER_PERIPHERALS_OFFSET 0x00200000
++
++#define ARCHI_TIMER_OFFSET               0x00000400
++
++#define ARCHI_CLUSTER_PERIPHERALS_ADDR             ( ARCHI_CLUSTER_ADDR + ARCHI_CLUSTER_PERIPHERALS_OFFSET )
++#define ARCHI_CLUSTER_PERIPHERALS_GLOBAL_ADDR(cid) ( ARCHI_CLUSTER_GLOBAL_ADDR(cid) + ARCHI_CLUSTER_PERIPHERALS_OFFSET )
++
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/archi/chips/mychip/properties.h pulp-runtime/include/archi/chips/mychip/properties.h
+--- pulp-runtime-orig/include/archi/chips/mychip/properties.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/archi/chips/mychip/properties.h	2020-11-16 17:17:08.134556989 +0100
+@@ -0,0 +1,246 @@
++/*
++ * Copyright (C) 2018 ETH Zurich and University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++
++#ifndef __ARCHI_PULPISSIMO_PROPERTIES_H__
++#define __ARCHI_PULPISSIMO_PROPERTIES_H__
++
++/*
++ * FPGA
++ */
++
++#ifndef ARCHI_FPGA_FREQUENCY
++#define ARCHI_FPGA_FREQUENCY 5000000
++#endif
++
++#ifndef ARCHI_FPGA_FC_FREQUENCY
++#define ARCHI_FPGA_FC_FREQUENCY 5000000
++#endif
++
++
++/*
++ * MEMORIES
++ */ 
++
++#define ARCHI_HAS_L2                   1
++#define ARCHI_HAS_L2_MULTI             1
++
++#define ARCHI_L2_PRIV0_ADDR  0x1c000000
++#define ARCHI_L2_PRIV0_SIZE  0x00008000
++
++#define ARCHI_L2_PRIV1_ADDR  0x1c008000
++#define ARCHI_L2_PRIV1_SIZE  0x00008000
++
++#define ARCHI_L2_SHARED_ADDR  0x1c010000
++#define ARCHI_L2_SHARED_SIZE  0x00070000
++
++
++
++/*
++ * MEMORY ALIAS
++ */
++
++#define ARCHI_HAS_L2_ALIAS             1
++
++
++
++/*
++ * IP VERSIONS
++ */
++
++#define UDMA_VERSION        3
++#define PERIPH_VERSION      2
++#define TIMER_VERSION       2
++#define SOC_EU_VERSION      2
++#define APB_SOC_VERSION     3
++#define STDOUT_VERSION      2
++#define GPIO_VERSION        2
++#define ITC_VERSION         1
++#define FLL_VERSION         1
++#define RISCV_VERSION       4
++#define HWME_VERSION        1
++#define PADS_VERSION        2
++
++
++/*
++ * CORE IDS
++ */
++
++#define ARCHI_FC_CID        31
++#define ARCHI_HAS_FC_ITC     1
++#define ARCHI_HAS_FC         1
++#define ARCHI_CORE_HAS_1_10  1
++
++
++
++/*
++ * CLOCKS
++ */
++
++#define ARCHI_REF_CLOCK_LOG2 15
++#define ARCHI_REF_CLOCK      (1<<ARCHI_REF_CLOCK_LOG2)
++
++
++
++/*
++ * UDMA
++ */
++
++#define ARCHI_UDMA_HAS_SPIM   1
++#define ARCHI_UDMA_HAS_UART   1
++#define ARCHI_UDMA_HAS_SDIO      1
++#define ARCHI_UDMA_HAS_I2C    1
++#define ARCHI_UDMA_HAS_I2S    1
++#define ARCHI_UDMA_HAS_CAM    1
++#define ARCHI_UDMA_HAS_TRACER 1
++#define ARCHI_UDMA_HAS_FILTER    1
++
++#define ARCHI_UDMA_NB_SPIM   1
++#define ARCHI_UDMA_NB_UART   1
++#define ARCHI_UDMA_NB_SDIO      1
++#define ARCHI_UDMA_NB_I2C    1
++#define ARCHI_UDMA_NB_I2S    1
++#define ARCHI_UDMA_NB_CAM    1
++#define ARCHI_UDMA_NB_TRACER 1
++#define ARCHI_UDMA_NB_FILTER    1
++
++#define ARCHI_UDMA_UART_ID(id)            0
++#define ARCHI_UDMA_SPIM_ID(id)            1
++#define ARCHI_UDMA_I2C_ID(id)             (2 + (id))
++#define ARCHI_UDMA_SDIO_ID(id)            (4   + (id))
++#define ARCHI_UDMA_I2S_ID(id)             5
++#define ARCHI_UDMA_CAM_ID(id)             6
++#define ARCHI_UDMA_FILTER_ID(id)          (7  + (id))
++#define ARCHI_UDMA_TRACER_ID(id)          8
++#define ARCHI_UDMA_TGEN_ID(id)            9
++
++#define ARCHI_NB_PERIPH                   10
++
++
++
++/*
++ * FLLS
++*/
++
++#define ARCHI_NB_FLL  2
++
++
++
++/*
++ * SOC EVENTS
++ */
++
++#define ARCHI_SOC_EVENT_PERIPH_EVT_NB     160
++
++#define ARCHI_SOC_EVENT_SW_NB      (8)
++
++#define ARCHI_SOC_EVENT_NB_TOTAL     256
++
++#define ARCHI_SOC_EVENT_UDMA_NB_CHANNEL_EVT_LOG2 2
++#define ARCHI_SOC_EVENT_UDMA_NB_CHANNEL_EVT (1<<ARCHI_SOC_EVENT_UDMA_NB_CHANNEL_EVT_LOG2)
++#define ARCHI_SOC_EVENT_UDMA_FIRST_EVT   0
++#define ARCHI_SOC_EVENT_UDMA_NB_EVT       (ARCHI_SOC_EVENT_UDMA_NB_CHANNEL_EVT * ARCHI_NB_PERIPH)
++#define ARCHI_SOC_EVENT_UDMA_NB_TGEN_EVT 6
++
++#define ARCHI_SOC_EVENT_PERIPH_FIRST_EVT(x)     ((x)*ARCHI_SOC_EVENT_UDMA_NB_CHANNEL_EVT)
++
++#define ARCHI_SOC_EVENT_UART0_RX          0
++#define ARCHI_SOC_EVENT_UART0_TX          1
++#define ARCHI_SOC_EVENT_UART0_EOT         2
++#define ARCHI_SOC_EVENT_UART0_RX_DATA     3
++
++#define ARCHI_SOC_EVENT_SPIM0_RX          4
++#define ARCHI_SOC_EVENT_SPIM0_TX          5
++#define ARCHI_SOC_EVENT_SPIM0_CMD         6
++#define ARCHI_SOC_EVENT_SPIM0_EOT         7
++
++#define ARCHI_SOC_EVENT_I2C0_RX           8
++#define ARCHI_SOC_EVENT_I2C0_TX           9
++
++#define ARCHI_SOC_EVENT_I2C1_RX           12
++#define ARCHI_SOC_EVENT_I2C1_TX           13
++
++#define ARCHI_SOC_EVENT_SDIO0_RX          16
++#define ARCHI_SOC_EVENT_SDIO0_TX          17
++
++#define ARCHI_SOC_EVENT_I2S0_RX           20
++#define ARCHI_SOC_EVENT_I2S0_TX           21
++
++#define ARCHI_SOC_EVENT_CPI0_RX           24
++
++#define ARCHI_SOC_EVENT_FILTER0_RX        28
++#define ARCHI_SOC_EVENT_FILTER0_TX        29
++
++#define ARCHI_SOC_EVENT_CLUSTER_ON_OFF   31
++#define ARCHI_SOC_EVENT_MSP              37
++#define ARCHI_SOC_EVENT_ICU_MODE_CHANGED 37
++#define ARCHI_SOC_EVENT_ICU_OK           37
++#define ARCHI_SOC_EVENT_ICU_DELAYED      37
++#define ARCHI_SOC_EVENT_CLUSTER_CG_OK    35
++#define ARCHI_SOC_EVENT_PICL_OK          36
++#define ARCHI_SOC_EVENT_SCU_OK           37
++#define ARCHI_SOC_EVENT_PMU_FIRST_EVENT  ARCHI_SOC_EVENT_CLUSTER_ON_OFF
++#define ARCHI_SOC_EVENT_PMU_NB_EVENTS    7
++
++#define ARCHI_SOC_EVENT_GPIO         42
++
++
++#define ARCHI_SOC_EVENT_NB_I2S_CHANNELS  4
++#define ARCHI_SOC_EVENT_NB_UDMA_CHANNELS 19
++
++#define ARCHI_SOC_EVENT_FCHWPE0 140
++#define ARCHI_SOC_EVENT_FCHWPE1 141
++
++#define ARCHI_SOC_EVENT_SW_EVENT0    48
++#define ARCHI_SOC_EVENT_SW_EVENT1    49
++#define ARCHI_SOC_EVENT_SW_EVENT2    50
++#define ARCHI_SOC_EVENT_SW_EVENT3    51
++#define ARCHI_SOC_EVENT_SW_EVENT4    52
++#define ARCHI_SOC_EVENT_SW_EVENT5    53
++#define ARCHI_SOC_EVENT_SW_EVENT6    54
++#define ARCHI_SOC_EVENT_SW_EVENT7    55
++
++#define ARCHI_SOC_EVENT_NB           8
++
++#define ARCHI_SOC_EVENT_REF_CLK_RISE 56
++
++
++
++/*
++ * FC EVENTS
++ */
++
++#define ARCHI_FC_EVT_FIRST_SW         0
++#define ARCHI_FC_EVT_NB_SW            8
++#define ARCHI_FC_EVT_TIMER0_LO           10
++#define ARCHI_FC_EVT_TIMER0_HI           11
++#define ARCHI_FC_EVT_CLK_REF          14
++#define ARCHI_FC_EVT_GPIO             15
++#define ARCHI_FC_EVT_RTC              16
++#define ARCHI_FC_EVT_ADV_TIMER0       17
++#define ARCHI_FC_EVT_ADV_TIMER1       18
++#define ARCHI_FC_EVT_ADV_TIMER2       19
++#define ARCHI_FC_EVT_ADV_TIMER3       20
++#define ARCHI_FC_EVT_CLUSTER_NOT_BUSY 21
++#define ARCHI_FC_EVT_CLUSTER_POK      22
++#define ARCHI_FC_EVT_CLUSTER_CG_OK    23
++#define ARCHI_FC_EVT_PICL_OK          24
++#define ARCHI_FC_EVT_SCU_OK           25
++#define ARCHI_FC_EVT_SOC_EVT          26
++#define ARCHI_FC_EVT_QUEUE_ERROR      29
++
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/archi/chips/mychip/pulp.h pulp-runtime/include/archi/chips/mychip/pulp.h
+--- pulp-runtime-orig/include/archi/chips/mychip/pulp.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/archi/chips/mychip/pulp.h	2020-11-10 17:38:02.751533983 +0100
+@@ -0,0 +1,39 @@
++/*
++ * Copyright (C) 2018 ETH Zurich and University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++
++#ifndef __ARCHI_PULPISSIMO_PULP_H__
++#define __ARCHI_PULPISSIMO_PULP_H__
++
++#include "archi/chips/pulpissimo/properties.h"
++#include "archi/chips/pulpissimo/apb_soc_ctrl.h"
++
++//#include "archi/periph_v2.h"
++#include "archi/gpio/gpio_v3.h"
++#include "archi/riscv/priv_1_10.h"
++#include "archi/riscv/pcer_v2.h"
++
++#include "archi/chips/pulpissimo/memory_map.h"
++#include "archi/chips/pulpissimo/apb_soc.h"
++
++#include "archi/udma/cpi/udma_cpi_v1.h"
++#include "archi/udma/i2c/udma_i2c_v2.h"
++#include "archi/udma/i2s/udma_i2s_v2.h"
++#include "archi/udma/spim/udma_spim_v3.h"
++#include "archi/udma/uart/udma_uart_v1.h"
++#include "archi/udma/udma_v3.h"
++
++#endif
+\ No newline at end of file
+diff -rub --new-file pulp-runtime-orig/include/chips/mychip/config.h pulp-runtime/include/chips/mychip/config.h
+--- pulp-runtime-orig/include/chips/mychip/config.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/chips/mychip/config.h	2020-11-16 23:14:12.324873877 +0100
+@@ -0,0 +1,28 @@
++/*
++ * Copyright (C) 2019 ETH Zurich, University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef __POS__CHIPS__PULP__CONFIG_H__
++#define __POS__CHIPS__PULP__CONFIG_H__
++
++#include "archi/pulp_defs.h"
++
++#define PULP_CHIP CHIP_MYCHIP
++#define PULP_CHIP_FAMILY CHIP_MYCHIP
++#define CONFIG_PULPISSIMO 1
++#define PULP_CHIP_STR mychip
++#define PULP_CHIP_FAMILY_STR mychip
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/chips/mychip/soc.h pulp-runtime/include/chips/mychip/soc.h
+--- pulp-runtime-orig/include/chips/mychip/soc.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/chips/mychip/soc.h	2020-11-16 17:17:08.145493084 +0100
+@@ -0,0 +1,44 @@
++/*
++ * Copyright (C) 2019 ETH Zurich, University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef __POS_CHIPS_PULP_SOC_H__
++#define __POS_CHIPS_PULP_SOC_H__
++
++
++#define POS_FLL_CL 2
++#define POS_FLL_PERIPH 1
++#define POS_FLL_FC 0
++
++extern int pos_freq_domains[PI_FREQ_NB_DOMAINS];
++
++
++void pos_soc_init();
++
++static inline int pos_freq_get_fll(int domain)
++{
++    switch (domain)
++    {
++        case PI_FREQ_DOMAIN_FC:
++            return POS_FLL_FC;
++
++        case PI_FREQ_DOMAIN_PERIPH:
++        default:
++            return POS_FLL_PERIPH;
++    }
++}
++
++
++#endif
+diff -rub --new-file pulp-runtime-orig/include/hal/chips/mychip/pulp.h pulp-runtime/include/hal/chips/mychip/pulp.h
+--- pulp-runtime-orig/include/hal/chips/mychip/pulp.h	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/include/hal/chips/mychip/pulp.h	2020-11-10 17:38:02.865456174 +0100
+@@ -0,0 +1,36 @@
++/*
++ * Copyright (C) 2018 ETH Zurich and University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef __HAL_CHIPS_PULPISSIMO_PULP_H__
++#define __HAL_CHIPS_PULPISSIMO_PULP_H__
++
++#include "hal/riscv/riscv_v5.h"
++#include "hal/itc/itc_v1.h"
++#include "hal/timer/timer_v2.h"
++#include "hal/soc_eu/soc_eu_v2.h"
++#include "hal/apb_soc/apb_soc_v3.h"
++#include "hal/fll/fll_v1.h"
++#include "archi/stdout/stdout_v3.h"
++#include "hal/gpio/gpio_v3.h"
++#include "hal/rom/rom_v2.h"
++
++#include "hal/udma/udma_v3.h"
++#include "hal/udma/cpi/udma_cpi_v1.h"
++#include "hal/udma/i2c/udma_i2c_v2.h"
++#include "hal/udma/spim/udma_spim_v3.h"
++#include "hal/udma/uart/udma_uart_v1.h"
++
++#endif
+\ No newline at end of file
+diff -rub --new-file pulp-runtime-orig/include/pulp.h pulp-runtime/include/pulp.h
+--- pulp-runtime-orig/include/pulp.h	2020-11-16 23:09:19.924205376 +0100
++++ pulp-runtime/include/pulp.h	2020-11-16 23:47:35.706423855 +0100
+@@ -27,6 +27,7 @@
+ #include <archi/pulp.h>
+ #include <hal/pulp.h>
+ #include <data/data.h>
++#include <my_ip.h>
+ 
+ typedef enum {
+   PI_FREQ_DOMAIN_FC     = 0,
+diff -rub --new-file pulp-runtime-orig/kernel/chips/mychip/link.ld pulp-runtime/kernel/chips/mychip/link.ld
+--- pulp-runtime-orig/kernel/chips/mychip/link.ld	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/kernel/chips/mychip/link.ld	2020-11-10 17:38:02.975467403 +0100
+@@ -0,0 +1,224 @@
++
++OUTPUT_ARCH(riscv)
++ENTRY( _start )
++MEMORY
++{
++  L2           : ORIGIN = 0x1c000004, LENGTH = 0x0007fffc
++}
++
++/*
++ * This linker script try to put FC data in L2 private bank0 and FC code 
++ * in L2 private bank1 to avoid contention between FC code and data
++ * as FC has no instruction cache and is so often accessing L2 to
++ * get instructions. Everything can be shifted in case one bank is full.
++ *
++ * Cluster code and initialized data are put in shared banks to not polute
++ * private banks which are quite small, and also avoid contentions between
++ * cluster cache refill and FC.
++ */
++
++
++SECTIONS
++{
++  /*
++   * L2 PRIVATE BANK0
++   *
++   * Contains FC data
++   */
++
++  .init :
++  {
++    . = ALIGN(4);
++    KEEP( *(.init) )
++  } > L2
++
++
++  .fini :
++  {
++    . = ALIGN(4);
++    KEEP( *(.fini) )
++  } > L2
++
++
++  .preinit_array : {
++    . = ALIGN(4);
++    PROVIDE_HIDDEN (__preinit_array_start = .);
++    KEEP (*(.preinit_array))
++    PROVIDE_HIDDEN (__preinit_array_end = .);
++  } > L2
++
++
++  .init_array : {
++    . = ALIGN(4);
++    PROVIDE_HIDDEN (__init_array_start = .);
++    __CTOR_LIST__ = .;
++    LONG((__CTOR_END__ - __CTOR_LIST__) / 4 - 2)
++    KEEP(*(.ctors.start))
++    KEEP(*(.ctors))
++    KEEP (*(SORT(.init_array.*)))
++    KEEP (*(.init_array ))
++    LONG(0)
++    __CTOR_END__ = .;
++    PROVIDE_HIDDEN (__init_array_end = .);
++  } > L2
++
++
++  .fini_array : {
++    . = ALIGN(4);
++    PROVIDE_HIDDEN (__fini_array_start = .);
++    __DTOR_LIST__ = .;
++    LONG((__DTOR_END__ - __DTOR_LIST__) / 4 - 2)
++    KEEP(*(.dtors.start))
++    KEEP(*(.dtors))
++    LONG(0)
++    __DTOR_END__ = .;
++    KEEP (*(SORT(.fini_array.*)))
++    KEEP (*(.fini_array ))
++    PROVIDE_HIDDEN (__fini_array_end = .);
++  } > L2
++
++
++  .boot : {
++    . = ALIGN(4);
++    *(.boot)
++    *(.boot.data)
++  } > L2
++
++
++  .rodata : {
++    . = ALIGN(4);
++    *(.rodata);
++    *(.rodata.*)
++    *(.srodata);
++    *(.srodata.*)
++    *(.eh_frame*)
++  } > L2
++
++
++  .got : {
++    . = ALIGN(4);
++    *(.got.plt) * (.igot.plt) *(.got) *(.igot)
++  } > L2
++
++
++  .shbss : {
++    . = ALIGN(4);
++    *(.shbss)
++  } > L2
++
++
++  .talias : {
++  } > L2
++
++
++  .gnu.offload_funcs : {
++    . = ALIGN(4);
++    KEEP(*(.gnu.offload_funcs))
++  } > L2
++
++
++  .gnu.offload_vars : {
++    . = ALIGN(4);
++    KEEP(*(.gnu.offload_vars))
++  } > L2
++
++
++  .stack : {
++    . = ALIGN(4);
++    . = ALIGN(16);
++    stack_start = .;
++    . = . + 0x800;
++    stack = .;
++  } > L2
++
++
++  .data : {
++    . = ALIGN(4);
++    sdata  =  .;
++    _sdata  =  .;
++    *(.data_fc)
++    *(.data_fc.*)
++    *(.data);
++    *(.data.*)
++    *(.sdata);
++    *(.sdata.*)
++    *(.heapl2ram)
++    *(.fcTcdm)
++    *(.fcTcdm.*)
++    *(.fcTcdm_g)
++    *(.fcTcdm_g.*)
++    . = ALIGN(4);
++    edata  =  .;
++    _edata  =  .;
++  } > L2
++
++
++  .bss : {
++    . = ALIGN(8);
++    _bss_start = .;
++    *(.bss)
++    *(.bss.*)
++    *(.sbss)
++    *(.sbss.*)
++    *(COMMON)
++    . = ALIGN(4);
++    _bss_end = .;
++  } > L2
++
++
++  __l2_priv0_end = ALIGN(4);
++
++
++
++
++  /*
++   * L2 PRIVATE BANK1
++   *
++   * Contains FC code
++   */
++
++  .vectors MAX(0x1c008000,ALIGN(256)) :
++  {
++    __irq_vector_base = .;
++    KEEP(*(.vectors))
++  } > L2
++
++  .text :
++  {
++    . = ALIGN(4);
++    _stext = .;
++    *(.text)
++    *(.text.*)
++    _etext  =  .;
++    *(.lit)
++    *(.shdata)
++    _endtext = .;
++    . = ALIGN(4);
++  } > L2
++
++  __l2_priv1_end = ALIGN(4);
++
++
++  /*
++   * L2 SHARED BANKS
++   *
++   * Contains other data such as peripheral data and cluster code and data
++   */
++
++  .l2_data MAX(0x1c010000,ALIGN(4)) :
++  {
++    . = ALIGN(4);
++    __cluster_text_start = .;
++    *(.cluster.text)
++    *(.cluster.text.*)
++    . = ALIGN(4);
++    __cluster_text_end = .;
++    *(.l2_data)
++    *(.l2_data.*)
++    *(.data_fc_shared)
++    *(.data_fc_shared.*)
++    . = ALIGN(4);
++  } > L2
++
++  __l2_shared_end = .;
++}
+diff -rub --new-file pulp-runtime-orig/kernel/chips/mychip/soc.c pulp-runtime/kernel/chips/mychip/soc.c
+--- pulp-runtime-orig/kernel/chips/mychip/soc.c	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/kernel/chips/mychip/soc.c	2020-11-16 17:17:08.159478901 +0100
+@@ -0,0 +1,37 @@
++/*
++ * Copyright (C) 2019 ETH Zurich, University of Bologna
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include "pulp.h"
++
++void pos_soc_init()
++{
++#if __PLATFORM__ != ARCHI_PLATFORM_FPGA
++
++  pos_fll_constructor();
++
++  pos_freq_domains[PI_FREQ_DOMAIN_FC] = pos_fll_init(POS_FLL_FC);
++
++  pos_freq_domains[PI_FREQ_DOMAIN_PERIPH] = pos_fll_init(POS_FLL_PERIPH);
++
++#else
++
++  pos_freq_domains[PI_FREQ_DOMAIN_FC] = ARCHI_FPGA_FC_FREQUENCY;
++
++  pos_freq_domains[PI_FREQ_DOMAIN_PERIPH] = ARCHI_FPGA_FREQUENCY;
++
++#endif
++}
++
+diff -rub --new-file pulp-runtime-orig/rules/pulpos/targets/mychip.mk pulp-runtime/rules/pulpos/targets/mychip.mk
+--- pulp-runtime-orig/rules/pulpos/targets/mychip.mk	1970-01-01 01:00:00.000000000 +0100
++++ pulp-runtime/rules/pulpos/targets/mychip.mk	2020-11-16 23:55:28.742606290 +0100
+@@ -0,0 +1,48 @@
++PULP_LDFLAGS      += 
++PULP_CFLAGS       +=  -D__riscv__
++PULP_ARCH_CFLAGS ?=  -march=rv32imcxgap9
++PULP_ARCH_LDFLAGS ?=  -march=rv32imcxgap9
++PULP_ARCH_OBJDFLAGS ?= -Mmarch=rv32imcxgap9
++PULP_CFLAGS    += -fdata-sections -ffunction-sections -include chips/mychip/config.h -I$(PULPRT_HOME)/include/chips/mychip
++PULP_OMP_CFLAGS    += -fopenmp -mnativeomp
++PULP_LDFLAGS += -nostartfiles -nostdlib -Wl,--gc-sections -L$(PULPRT_HOME)/kernel -Tchips/mychip/link.ld -lgcc
++
++PULP_CC = riscv32-unknown-elf-gcc 
++PULP_AR ?= riscv32-unknown-elf-ar
++PULP_LD ?= riscv32-unknown-elf-gcc
++PULP_OBJDUMP ?= riscv32-unknown-elf-objdump
++
++fc/archi=riscv
++pe/archi=riscv
++pulp_chip=pulp
++pulp_chip_family=pulp
++fc_itc/version=1
++udma/cpi/version=1
++udma/i2c/version=2
++soc/fll/version=1
++udma/i2s/version=2
++udma/uart/version=1
++event_unit/version=3
++perf_counters=True
++fll/version=1
++padframe/version=1
++udma/spim/version=3
++gpio/version=3
++udma/archi=3
++udma/version=3
++soc_eu/version=2
++
++
++# FLL
++PULP_SRCS     += kernel/fll-v$(fll/version).c
++PULP_SRCS     += kernel/freq-domains.c
++PULP_SRCS     += kernel/chips/mychip/soc.c
++
++
++include $(PULPRT_HOME)/rules/pulpos/configs/default.mk
++
++ifeq '$(platform)' 'fpga'
++CONFIG_IO_UART=1
++endif
++
++include $(PULPRT_HOME)/rules/pulpos/default_rules.mk
