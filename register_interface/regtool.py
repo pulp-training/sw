@@ -1,1 +1,1 @@
-register_interface/vendor/lowrisc_opentitan/util/regtool.py
+vendor/lowrisc_opentitan/util/regtool.py
