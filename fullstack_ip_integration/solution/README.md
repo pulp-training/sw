@@ -1,9 +1,9 @@
 # full_stack_ip_integration solution
 
 The solution consist of the following parts
-* The hardware changes
-* Patching the PULP-RUNTIME with the [new driver][#Adding-the-new-driver] (`runtime-driver.patch`)
-* The test [application][#Application], which exercises the driver (`widealu-ip`)
+1. The hardware changes
+2. Patching the PULP-RUNTIME with the [new driver](#adding-the-new-driver) (`runtime-driver.patch`)
+3. The test [application](#application), which exercises the driver (`widealu-ip`)
 
 
 ## Adding the new driver
