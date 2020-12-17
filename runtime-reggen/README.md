@@ -15,7 +15,7 @@ Note that this exercise needs the information/setup from the previous exercise.
 # Notes
 We are assuming you run on a centos 7 machine (with `python3.6` from EPEL).
 
-There is a *symlink to the regtool.py script in the root directory of this project*.
+There is a *symlink to the regtool.py script in this directory*.
 
 *Python dependencies to run* `./regtool.py`
 ```
