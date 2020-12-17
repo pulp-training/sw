@@ -47,3 +47,21 @@ Change mem layout to following values:
    >Hint: Although not strictly necessary in this case it is always a good idea to run the clean target as well since modifications to the TCL script when running `./generate_scripts` are not properly captured by the make target and you might end up with outdated module versions if you just run the `build` target.
 
 
+## Adjusting the linkerscript
+   Now that we have a different memory layout, we need to tell the linkerscript
+   about it. In this part, we accomodate for the larger L2 memory, add a new
+   memory section for the additional private bank and finally try to map some
+   interesting sections to this new private bank.
+
+   1. Extend the existing L2 memory region to match the size of the
+   new interleaved region
+
+   2. Add a new memory region for the third private bank
+
+   3. Map the .data and .bss section to the new private bank. Confirm it by
+   inspecting the executable with `riscv32-unknown-elf-readelf` or
+   `riscv32-unknown-elf-nm`. You should see that the section is being mapped to
+   the address range of the new private bank. You can use the provided `mem.c`
+   program to see if your changes to the linkerscript are correctly reflected in
+   the compiled program.
+
