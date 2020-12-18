@@ -1,4 +1,4 @@
-PULP_APP = mem
+PULP_APP = link_test
 PULP_APP_FC_SRCS = link_test.c
 PULP_APP_HOST_SRCS = link_test.c
 PULP_CFLAGS = -O0 -g
