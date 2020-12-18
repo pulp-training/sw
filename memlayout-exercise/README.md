@@ -66,7 +66,7 @@ If you feel stuck, don't hesitate to ask us for help.
 
    2. Add a new memory region for the third private bank
 
-   3. Map the .data and .bss section to the new private bank. Confirm it by
+   3. Map the .bss section to the new private bank. Confirm the mapping by
    inspecting the executable with `riscv32-unknown-elf-readelf` or
    `riscv32-unknown-elf-nm`. You should see that the section is being mapped to
    the address range of the new private bank. You can use the provided
