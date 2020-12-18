@@ -12,11 +12,12 @@ Change mem layout to following values:
    localparam both in `pulp_soc.sv` as well as in `l2_ram_multibank.sv`)
 3. Make sure to also modify the bank size for the fpga port (`fpga_settings.mk` in
    the corresponding board directories).
-4. Modify the address space start/end addresses
+4. Modify the address space start/end addresses for the L2_MEMORY region
    (`<pulpissimo>/rtl/includes/soc_mem_map.svh`). Have a closer look at the
    `soc_interconnect_wrap.sv` module to understand how it works and how the
    macro values are applied to the parametric interconnect
    (`soc_interconnect.sv`).
+   > Hint: The relevant macro for address space is called `SOC_MEM_MAP_TCDM_START_ADDR`
 ## Adding an additional private SRAM bank
  1. Define a new memory region for the new memory bank with a size of 2kB (same size as the existing private banks). The start address of the new memory region shall be `0x1b000000`.
  >Hint: Modify `<pulpissimo>/rtl/includes/soc_mem_map.svh` to achieve this.
@@ -35,7 +36,8 @@ Change mem layout to following values:
      
      Dont forget to increase the number of address rules parameters when you add the rules for the new memory bank.
    >Hint: The same applies as for point 2, you could increase the size of the interface arry but we do it with a dedicated port for this exercise.
-4. In `pulp_soc.sv` the additional wiring signal to connect the new output port of the `soc_interconnect_wrap.sv` to the new port of `l2_ram_multibank.sv`.
+4. In `pulp_soc.sv` the additional wiring signal to connect the new output port
+   of the `soc_interconnect_wrap.sv` to the new port of `l2_ram_multibank.sv`.
 5. Since we didn't add any new files nor added new IPs, we don't have to
    regenerate the TCL scripts for compilation. However, we obviously have to
    recompile the source files after modifying them. To do so run the following
@@ -61,7 +63,31 @@ Change mem layout to following values:
    3. Map the .data and .bss section to the new private bank. Confirm it by
    inspecting the executable with `riscv32-unknown-elf-readelf` or
    `riscv32-unknown-elf-nm`. You should see that the section is being mapped to
-   the address range of the new private bank. You can use the provided `mem.c`
-   program to see if your changes to the linkerscript are correctly reflected in
-   the compiled program.
+   the address range of the new private bank. You can use the provided
+   `link_test.c` in the `link_test` subdirectory program to see if your changes
+   to the linkerscript are correctly reflected in the compiled program.
 
+## Test your modications on the hardware
+  1. Switch to the mem_test subdirectory of this repository and compile the application.
+  2. Run the application on your modified hardware. Make sure you did not forget
+     to compile your modified pulpissimo beforehand. Also make sure that your
+     `VSIM_PATH` environment variable points to the right location.
+     
+     Start the simulation in gui mode so you can see what's going on:
+     
+     ``` shell
+     make clean all run gui=1
+     ```
+  3. If you modified everything correctly, you should see a number of success
+     print statements in the log and the programm should terminate with exit
+     code 0. If this is not the case, check the log output of the simulation and
+     use the wave window in Questasim to debug your modifications. A good set of
+     signals to add for debugging would be the 8 interleaved memory bank ports
+     and the port of the additional private memory bank entering
+     `l2_ram_multibank.sv`. Besides that it is always helpfull to add the
+     soc_interconnect and the core instruction signals to the waveform view:
+     
+     ``` tcl
+     do waves/soc_interconnect_wrap.tcl
+     do waves/software.tcl
+     ```
