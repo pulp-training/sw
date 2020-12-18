@@ -1,7 +1,13 @@
 # Instructions
-This is a rather involved exercise... blablabla
-Change mem layout to following values: 
-8 interleaved banks each 256kB
+In this rather involved exercise you are going to modify the memory layout of pulpissimo. The default of pulpissimo is to contain the following SRAM banks:
+* 4 x 128KB banks for the interleaved memory
+* 2 x 32KB private banks for the core In this exercise we are going to change
+that. Your task is to increase the total amount of memory for the interlaved
+region from 512KB (4x128KB) *to 2MB (8x256KB)*. So not only we are going to
+increase the banking factor from 4 to 8 and increase the size of each
+interleaved bank to 256Kb = 65536 32-bit words. Furthermore, you will add a new
+private SRAM bank to the system with a size of *32KB = 8192 32-bit words*.
+If you feel stuck, don't hesitate to ask us for help.
 
 # RTL Modification Instructions
 ## Changing Interleaved RAM layout
