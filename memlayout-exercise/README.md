@@ -38,7 +38,7 @@ If you feel stuck, don't hesitate to ask us for help.
      using the macros you defined in step 1. The following illustration of the
      `soc_interconnect` might help:
      
-     ![soc_interconect_ports](soc_interconnect_addr_decode.png q) 
+     ![soc_interconect_ports](soc_interconnect_addr_decode.png) 
      
      Dont forget to increase the number of address rules parameters when you add the rules for the new memory bank.
    >Hint: The same applies as for point 2, you could increase the size of the interface arry but we do it with a dedicated port for this exercise.
