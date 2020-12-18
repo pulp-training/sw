@@ -74,7 +74,7 @@ index 0000000..85c8b9b
 +  *ctrl1_reg = (1 & WIDE_ALU_CTRL1_CLEAR_ERR_MASK)<<WIDE_ALU_CTRL1_CLEAR_ERR_LSB;
 +}
 +
-+int wide_multiply(uint32_t a[32], uint32_t b[32], uint32_t result[64]) {
++int wide_multiply(uint32_t a[8], uint32_t b[8], uint32_t result[16]) {
 +    int status = poll_done();
 +    if (status != 0) {
 +	printf("error: setting up multiplication\n");
@@ -449,7 +449,7 @@ index 0000000..8208ce0
 +void set_operands(uint32_t* a, uint32_t* b);
 +int poll_done(void);
 +void clear_error(void);
-+int wide_multiply(uint32_t a[32], uint32_t b[32], uint32_t result[64]);
++int wide_multiply(uint32_t a[8], uint32_t b[8], uint32_t result[16]);
 diff --git a/rules/pulpos/targets/pulpissimo.mk b/rules/pulpos/targets/pulpissimo.mk
 index 31fa720..b7f1a43 100644
 --- a/rules/pulpos/targets/pulpissimo.mk
